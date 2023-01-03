@@ -43,7 +43,7 @@ data = [
     dict(Year='2019', amount=2461),
     dict(Year='2020', amount=2439),
     dict(Year='2021', amount=2015),
-    dict(Year='2022-until July', amount=1200)
+    dict(Year='2022-until Nov', amount=1830)
 ]
 
 columns = [
@@ -102,7 +102,7 @@ layout = html.Div([
 def interactive_graphing(value_year):
     dff = df[df.Year == value_year]
     fig = px.pie(dff, values='Count', names='Cancer',
-                 title='Cancer Pt Statistic by Year 2019-2022(July)',
+                 title='Cancer Pt Statistic by Year 2019-2022(Nov)',
                  labels='Cancer', color_discrete_sequence=px.colors.sequential.Agsunset)
     fig.update_traces(textposition='inside', textinfo='percent+label+value')
     return fig
