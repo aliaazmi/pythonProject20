@@ -43,7 +43,7 @@ data = [
     dict(Year='2019', amount=2461),
     dict(Year='2020', amount=2439),
     dict(Year='2021', amount=2015),
-    dict(Year='2022-until Nov', amount=1830)
+    dict(Year='2022-until Nov', amount=2006)
 ]
 
 columns = [
