@@ -40,9 +40,9 @@ fig2.update_traces(textposition='inside', textinfo='percent+label+value')
 df['Year'] = df['Year'].apply(str)
 
 data = [
-    dict(Year='2019', amount=2461),
-    dict(Year='2020', amount=2439),
-    dict(Year='2021', amount=2015),
+    dict(Year='2019', amount=1981),
+    dict(Year='2020', amount=2367),
+    dict(Year='2021', amount=2461),
     dict(Year='2022-until Nov', amount=2006)
 ]
 
