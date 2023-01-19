@@ -21,7 +21,7 @@ import plotly.graph_objects as go
 from plotly.graph_objs import Figure
 from app import app
 
-df = pd.read_csv('https://raw.githubusercontent.com/aliaazmi/data/main/Data_base_cancer_26.csv')
+df = pd.read_csv('https://raw.githubusercontent.com/aliaazmi/data/main/Data_base_cancer_27.csv')
 
 
 
