@@ -91,7 +91,7 @@ layout = html.Div([
     dcc.Dropdown(id='year-choice',
                  options=[{'label': x, 'value': x}
                           for x in sorted(df.Year.unique())],
-                 value='2019', style={'width': '50%'}
+                 value='2023', style={'width': '50%'}
                  ), html.Br(), html.Br(''), html.Br(''),
     container, html.Hr(),
 ])
