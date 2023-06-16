@@ -24,10 +24,10 @@ from app import app
 df = pd.read_csv('https://raw.githubusercontent.com/aliaazmi/data/main/Data_base_cancer_30.csv')
 
 
-df_filterd2 = df[df['Year'].isin(['FEMALE', 'MALE'])]
+df_filterd2 = df[df['Year']]
 
 fig = px.pie(df_filterd2, values='Count', names='Cancer',
-             title='Beacon Hospital Cancer Pt Statistic 2019-2021',
+             title='Beacon Hospital Cancer Pt Statistic 2019-2023',
              labels='Cancer', )
 fig.update_traces(textposition='inside', textinfo='percent+label+value')
 
@@ -43,7 +43,7 @@ data = [
     dict(Year='2020', amount=2367),
     dict(Year='2021', amount=2461),
     dict(Year='2022', amount=2232),
-    dict (Year= '2023', amount= 930),
+    dict (Year= '2023', amount= 930)
   ]
 
 columns = [
