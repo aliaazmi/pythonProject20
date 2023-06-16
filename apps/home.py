@@ -81,7 +81,7 @@ container = html.Div([pie1_graph, pie2_graph, ],
                      style={'display': 'grid',
                             'gridTemplateAreas': '"pie1 pie2" ',
                             'gridTemplateColumns': '50vw 50vw',
-                            'gridTemplateRows': '95vh', })
+                            'gridTemplateRows': '95vh'})
 
 layout = html.Div([
     html.H1('Beacon Hospital Cancer Pt Statistic 2019-2023(until May)'),
