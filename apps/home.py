@@ -84,7 +84,7 @@ container = html.Div([pie1_graph, pie2_graph, ],
                             'gridTemplateRows': '95vh', })
 
 layout = html.Div([
-    html.H1('Beacon Hospital Cancer Pt Statistic 2019-2023(May)'),
+    html.H1('Beacon Hospital Cancer Pt Statistic 2019-2023(until May)'),
     dr_table, html.H1(""), html.H1(''),  html.Br(), html.Hr(), html.Br(), html.Br(),
     dcc.Dropdown(id='year-choice',
                  options=[{'label': x, 'value': x}
