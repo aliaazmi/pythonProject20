@@ -43,7 +43,9 @@ data = [
     dict(Year='2019', amount=1981),
     dict(Year='2020', amount=2367),
     dict(Year='2021', amount=2461),
-    dict(Year='2022', amount=2232)
+    dict(Year='2022', amount=2232),
+    dict (Year= '2023', amount= 929) 
+  
 ]
 
 columns = [
@@ -84,7 +86,7 @@ container = html.Div([pie1_graph, pie2_graph, ],
                             'gridTemplateRows': '95vh', })
 
 layout = html.Div([
-    html.H1('Beacon Hospital Cancer Pt Statistic 2019-2022'),
+    html.H1('Beacon Hospital Cancer Pt Statistic 2019-2023(May)'),
     dr_table, html.H1(""), html.H1(''),  html.Br(), html.Hr(), html.Br(), html.Br(),
     dcc.Dropdown(id='year-choice',
                  options=[{'label': x, 'value': x}
@@ -102,7 +104,7 @@ layout = html.Div([
 def interactive_graphing(value_year):
     dff = df[df.Year == value_year]
     fig = px.pie(dff, values='Count', names='Cancer',
-                 title='Cancer Pt Statistic by Year 2019-2022',
+                 title='Cancer Pt Statistic by Year 2019-2023(May)',
                  labels='Cancer', color_discrete_sequence=px.colors.sequential.Agsunset)
     fig.update_traces(textposition='inside', textinfo='percent+label+value')
     return fig
