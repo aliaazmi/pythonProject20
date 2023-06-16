@@ -24,7 +24,6 @@ from app import app
 df = pd.read_csv('https://raw.githubusercontent.com/aliaazmi/data/main/Data_base_cancer_30.csv')
 
 
-
 df_filterd2 = df[df['Year'].isin(['FEMALE', 'MALE'])]
 
 fig = px.pie(df_filterd2, values='Count', names='Cancer',
@@ -45,8 +44,7 @@ data = [
     dict(Year='2021', amount=2461),
     dict(Year='2022', amount=2232),
     dict (Year= '2023', amount= 930) 
-  
-]
+  ]
 
 columns = [
     dict(id='Year', name='Year'),
