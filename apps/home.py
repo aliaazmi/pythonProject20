@@ -1,110 +1,177 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
 import dash
-import plotly.express as px
-import plotly.io as pio
 import pandas as pd
-import dash_core_components as dcc
-import dash_html_components as html
-from dash import Dash, dcc, html, Input, Output
 import plotly.express as px
-from dash.dependencies import Output, Input
-import plotly.figure_factory as ff
-import plotly.graph_objs as go
-import dash_html_components as html
-from dash_table import DataTable
-import plotly.graph_objects as go
-from plotly.graph_objs import Figure
-from app import app
+from dash import dcc, html, dash_table
+from dash.dependencies import Input, Output
+import dash_bootstrap_components as dbc
 
-df = pd.read_csv('https://raw.githubusercontent.com/aliaazmi/data/main/Data_base_cancer_31.csv')
+# Read the data from the CSV file
+url = 'https://raw.githubusercontent.com/aliaazmi/data/main/Data_base_cancer_31.csv'
+df = pd.read_csv(url, encoding='ISO-8859-1')
 
+# Get yearly counts
+yearly_counts = df.groupby('Year')['Count'].sum().reset_index()
 
-df_filterd2 = df[df['Year']]
+# Get overall counts for each cancer
+cancer_counts = df.groupby('Cancer')['Count'].sum().reset_index()
 
-fig = px.pie(df_filterd2, values='Count', names='Cancer',
-             title='Beacon Hospital Cancer Pt Statistic 2019-2023',
-             labels='Cancer', )
-fig.update_traces(textposition='inside', textinfo='percent+label+value')
+# Define the Dash app with Bootstrap theme
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-fig2 = px.pie(df, values='Count', names='Cancer',
-              title="Cancer Pt Statistic (Overall)",
-              labels='Cancer', color_discrete_sequence=px.colors.sequential.RdPu)
-fig2.update_traces(textposition='inside', textinfo='percent+label+value')
+# Define custom colors for the pie chart
+pie_chart_colors = ['#FFCDD2', '#B39DDB', '#80DEEA', '#FFAB91', '#9FA8DA', '#A5D6A7']
 
-df['Year'] = df['Year'].apply(str)
+# Define custom colors for the bar chart
+bar_chart_colors = ['#FF7043', '#5C6BC0', '#26A69A', '#D81B60', '#7986CB', '#66BB6A']
 
-data = [
-    dict(Year='2019', amount=1981),
-    dict(Year='2020', amount=2367),
-    dict(Year='2021', amount=2461),
-    dict(Year='2022', amount=2232),
-    dict (Year= '2023', amount= 930)
-  ]
-
-columns = [
-    dict(id='Year', name='Year'),
-    dict(id='amount', name='Pt Amount', type='numeric'),
-]
-dr_table = DataTable(columns=columns,
-                     data=data,
-                     active_cell={'row': 0, 'column': 0},
-                     sort_action='native',
-                     derived_virtual_data=data,
-                     style_table={'minHeight': '19vh',
-                                  'height': '19vh',
-                                  'overflowY': 'scrool'},
-                     style_cell={"whitespace": 'normal',
-                                 'height': 'auto',
-                                 'fontFamily': 'verdana'},
-                     style_header={'textAlign': 'center',
-                                   'fontSize': 22},
-                     style_data={'fontSize': 20},
-                     style_data_conditional=[{'textAlign': 'center',
-                                              'cursor': "pointer"},
-                                             {'if': {'row_index': 'odd'}, 'backgroundColor': '#f2e5ff'}],
-
-                     )
-
-dr_table.style = {'gridArea': 'tables'}
-pie1_graph = dcc.Graph(figure=fig, id="my-graph",
-                       style={'gridArea': 'pie1'})
-
-pie2_graph = dcc.Graph(figure=fig2,
-                       style={'gridArea': 'pie2'})
-
-container = html.Div([pie1_graph, pie2_graph, ],
-                     style={'display': 'grid',
-                            'gridTemplateAreas': '"pie1 pie2" ',
-                            'gridTemplateColumns': '50vw 50vw',
-                            'gridTemplateRows': '95vh'})
-
-layout = html.Div([
-    html.H1('Beacon Hospital Cancer Pt Statistic 2019-2023(until May)'),
-    dr_table, html.H1(""), html.H1(''),  html.Br(), html.Hr(), html.Br(), html.Br(),
-    dcc.Dropdown(id='year-choice',
-                 options=[{'label': x, 'value': x}
-                          for x in sorted(df.Year.unique())],
-                 value='2019', style={'width': '50%'}
-                 ), html.Br(), html.Br(''), html.Br(''),
-    container, html.Hr(),
+# Define the layout for the app
+app.layout = html.Div([
+    html.H1('Beacon Hospital Cancer Pt Statistic 2019-2023 (until May)', className="mt-4 mb-5 text-center"),
+    
+    html.Br(),
+    
+    dbc.Row([
+        dbc.Col([
+            dcc.Dropdown(
+                id='year-choice-bar',
+                options=[{'label': x, 'value': x} for x in sorted(df.Year.unique())],
+                value='2019',
+                style={'width': '100%'}
+            ),
+            dcc.Graph(
+                id='cancer-year-bar-chart',
+                style={'height': '495px'}
+            )
+        ], width=6),  # Specify that this column takes 6 out of 12 columns (i.e., half of the row)
+        dbc.Col([
+            dcc.Graph(
+                id='overall-pie-chart',
+                style={'height': '485px'}
+            )
+        ], width=6)  # Specify that this column takes 6 out of 12 columns (i.e., half of the row)
+    ]),
+    
+    html.Br(),
+    
+    dbc.Row([
+        dbc.Col([
+            dash_table.DataTable(
+                id='yearly-table',
+                columns=[
+                    {"name": "Year", "id": "Year"},
+                    {"name": "Cases Count", "id": "Count"}
+                ],
+                data=yearly_counts.to_dict('records'),
+                style_table={'height': '400px', 'overflowY': 'auto'},
+                style_cell={
+                    'whiteSpace': 'normal',
+                    'height': 'auto',
+                    'fontFamily': 'verdana',
+                    'textAlign': 'center',  # Center align text in cells
+                    'padding': '6px'  # Add padding to the cells
+                },
+                style_header={
+                    'backgroundColor': '#f2f2f2',  # Set header background color
+                    'fontWeight': 'bold',  # Bold font for header cells
+                },
+                style_data={'fontSize': 14},  # Reduce font size for data cells
+                style_data_conditional=[
+                    {
+                        'if': {'row_index': 'odd'},
+                        'backgroundColor': '#f9f9f9'  # Alternate row background color
+                    },
+                    {
+                        'if': {
+                            'filter_query': '{Count} > 1000',
+                            'column_id': 'Count'
+                        },
+                        'backgroundColor': '#f0fafd',  # Light blue background for counts > 1000
+                        'color': 'black'  # Font color for counts > 1000
+                    },
+                    {
+                        'if': {
+                            'filter_query': '{Count} <= 1000',
+                            'column_id': 'Count'
+                        },
+                        'backgroundColor': '#ffe6e6',  # Light red background for counts <= 1000
+                        'color': 'black'  # Font color for counts <= 1000
+                    }
+                ],
+            )
+        ], width=12)
+    ]),
+    
+    html.Br(),
+    
+    html.H2('Insights'),
+    html.P('The Beacon Hospital Cancer Pt Statistic dashboard provides an overview of cancer cases '
+           'from the year 2019 to 2023. It allows users to explore the distribution of cancer cases '
+           'by year and cancer type in the bar chart on the left. The pie chart on the right displays the overall '
+           'cancer statistics for different types of cancer.'),
+    html.P('Users can select a specific year from the bar chart dropdown to view the cancer distribution for '
+           'that particular year. The table below shows the amount of cancer cases for each year. Users can click on the '
+           'table headers to sort the data by year or cases count.'),
+    
+    dcc.Link('Go back to home', href='/'),
 ])
 
 @app.callback(
-    Output(component_id="my-graph", component_property="figure"),
-    Input(component_id="year-choice", component_property="value"),
-
+    Output('cancer-year-bar-chart', 'figure'),
+    Input('year-choice-bar', 'value')
 )
-def interactive_graphing(value_year):
-    dff = df[df.Year == value_year]
-    fig = px.pie(dff, values='Count', names='Cancer',
-                 title='Cancer Pt Statistic by Year 2019-2023(May)',
-                 labels='Cancer', color_discrete_sequence=px.colors.sequential.Agsunset)
-    fig.update_traces(textposition='inside', textinfo='percent+label+value')
-    return fig
+def update_cancer_year_bar_chart(selected_year):
+    dff = df[df['Year'] == int(selected_year)]
+    dff_sum = dff.groupby('Cancer')['Count'].sum().reset_index()
+    dff_sum = dff_sum.sort_values('Count', ascending=False)  # Sort the data in descending order
+    fig_cancer_year_bar = px.bar(
+        dff_sum, x='Cancer', y='Count', color='Cancer', title=f'Cancer Pt Statistic in {selected_year}',
+        labels={'Cancer': 'Cancer Type', 'Count': 'Cases Count'}, text='Count',
+        color_discrete_sequence=bar_chart_colors,  # Use custom colors for the bar chart
+        category_orders={'Cancer': dff_sum['Cancer']}  # Maintain the order of the x-axis labels
+    )
+    fig_cancer_year_bar.update_traces(
+        texttemplate='%{text}', textposition='outside',
+        marker=dict(line=dict(width=1, color='DarkSlateGrey')), opacity=0.8  # Add border to the bars
+    )
+    fig_cancer_year_bar.update_layout(
+        xaxis=dict(title=''),  # Empty string to remove the x-axis title
+        yaxis=dict(title=''),  # Empty string to remove the y-axis title
+        plot_bgcolor="#f9f9f9",
+        paper_bgcolor="#f9f9f9",
+        font=dict(size=16, color="#4c4c4c"),
+        margin=dict(l=60, r=20, t=60, b=40),
+        hovermode="x",
+        hoverlabel=dict(bgcolor="#f9f9f9", font_size=16, font_family="Arial"),
+        showlegend=False  # Hide the legend
+    )
+    return fig_cancer_year_bar
 
+@app.callback(
+    Output('overall-pie-chart', 'figure'),
+    Input('year-choice-bar', 'value')
+)
+def update_overall_pie_chart(selected_year):
+    dff_sum = df.groupby('Cancer')['Count'].sum().reset_index()
+    fig_overall_pie = px.pie(
+        dff_sum, values='Count', names='Cancer', title='Overall Cancer Pt Statistic',
+        color_discrete_sequence=pie_chart_colors,  # Use custom colors for the pie chart
+        labels={'Cancer': 'Cancer Type'}
+    )
+    fig_overall_pie.update_traces(
+        textposition='inside',
+        textinfo='percent+label+value',
+        insidetextfont=dict(size=14),
+        marker=dict(line=dict(width=1, color='DarkSlateGrey')),
+        opacity=0.8
+    )
+    fig_overall_pie.update_layout(
+        plot_bgcolor="#f9f9f9",
+        paper_bgcolor="#f9f9f9",
+        font=dict(size=16, color="#4c4c4c"),
+        margin=dict(l=20, r=20, t=60, b=40),
+        hovermode="closest",
+        hoverlabel=dict(bgcolor="#f9f9f9", font_size=16, font_family="Arial"),
+        showlegend=False  # Hide the legend
+    )
+    return fig_overall_pie
 
